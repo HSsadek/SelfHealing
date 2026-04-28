@@ -59,20 +59,7 @@ const optimizeInputTokens = (siteData, staticIssues) => {
     };
 };
 
-const getFallbackResponse = (errorMessage) => ({
-    aiInsights: {
-        ux: { score: 0, problems: ["AI failed"], suggestions: [] },
-        content: { score: 0, problems: ["AI failed"], suggestions: [] },
-        seo: { score: 0, problems: ["AI failed"], suggestions: [] }
-    },
-    priorityActions: [
-        {
-            issue: "AI Layer Unavailable (Gemini)",
-            impact: "high",
-            fix: errorMessage
-        }
-    ]
-});
+// Removed getFallbackResponse inside aiAnalyzer; Controller handles fallback to static analyzer
 
 const callGemini = async (payload) => {
     const API_KEY = process.env.GEMINI_API_KEY;
@@ -122,8 +109,8 @@ const analyzeWithAI = async (siteData, staticIssues) => {
 
     } catch (error) {
         console.error("[AI REST ERROR]", error.message);
-        // Fallback gracefully so the main API doesn't crash 
-        return getFallbackResponse(error.message);
+        // Throw error so the Controller can seamlessly fallback to static engine
+        throw error;
     }
 };
 

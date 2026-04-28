@@ -1,6 +1,7 @@
 const scraperService = require('../services/scraper.service');
 const domAnalyzer = require('../services/domAnalyzer');
 const aiAnalyzer = require('../services/aiAnalyzer');
+const staticAnalyzer = require('../services/staticAnalyzer');
 const cheerio = require('cheerio');
 const { withCacheAndDedup } = require('../utils/cache');
 
@@ -33,9 +34,17 @@ const performExtractionAndAnalysis = async (url) => {
 
     // Get AI insights
     console.log(`[Controller] Requesting Gemini insights...`);
-    const aiResponse = await aiAnalyzer.analyzeWithAI(siteData, analysis);
+    let aiResponse;
+    try {
+        aiResponse = await aiAnalyzer.analyzeWithAI(siteData, analysis);
+        analysis.analysisEngine = 'ai';
+    } catch (err) {
+        console.warn(`[Controller] AI failed (${err.message}), healing gracefully with Static Engine...`);
+        aiResponse = staticAnalyzer.analyzeWithStaticEngine(siteData);
+        analysis.analysisEngine = 'static';
+    }
 
-    // Merge the AI insights gracefully into the response
+    // Merge the AI or Static insights gracefully into the response
     analysis.aiInsights = aiResponse.aiInsights || null;
     analysis.priorityActions = aiResponse.priorityActions || [];
 

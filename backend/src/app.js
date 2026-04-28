@@ -3,6 +3,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const analyzeRoutes = require('./routes/analyze.routes');
 const healthRoutes = require('./routes/health.routes');
+const testingRoutes = require('./routes/testing.routes');
 const { apiLogger } = require('./utils/logger');
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(morgan('combined', { stream: { write: message => apiLogger.info(message.
 // Main API routes
 app.use('/api', analyzeRoutes);
 app.use('/api', healthRoutes);
+app.use('/api/test', testingRoutes);
 
 // Global Error Handling Middleware
 app.use((err, req, res, next) => {

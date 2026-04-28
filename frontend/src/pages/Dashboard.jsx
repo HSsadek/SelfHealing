@@ -6,6 +6,7 @@ import PriorityActions from '../components/PriorityActions';
 import IssuesTable from '../components/IssuesTable';
 import { analyzeUrl } from '../services/api';
 import { motion } from 'framer-motion';
+import TestingPanel from '../components/TestingPanel';
 
 const Dashboard = () => {
     const [url, setUrl] = useState('');
@@ -94,6 +95,8 @@ const Dashboard = () => {
                     {data.issues && data.issues.length > 0 && (
                         <IssuesTable issues={data.issues} />
                     )}
+
+                    <TestingPanel url={url} />
                 </motion.div>
             )}
         </DashboardLayout>
